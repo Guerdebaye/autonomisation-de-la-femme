@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEMMES 2030 - Autonomisation Digitale</title>
+    
+    <!-- CHARGEMENT DES RESSOURCES EXTERNES -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- CONFIGURATION TAILWIND -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            senegalGreen: '#00853f',
+                            empowermentPurple: '#7C3AED',
+                            sunshineYellow: '#FDE047',
+                            deepRed: '#CE1126'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        arabic: ['Scheherazade New', 'serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f9fafb;
+        }
+        .view-section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .view-section.active {
+            display: block;
+        }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #7C3AED;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        .progress-ring {
+    transform: rotate(-90deg);
+}
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.5s ease;
+}
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-sm shadow-md border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center cursor-pointer hover:scale-105 transition" onclick="navigateTo('home')">
+                    <i data-lucide="zap" class="w-8 h-8 text-primary-senegalGreen"></i>
+                    <h1 class="ml-2 text-xl font-bold text-gray-900 tracking-tight">
+                        <span class="text-primary-empowermentPurple">Femmes</span> 2030
+                    </h1>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-6">
+                        <li onclick="navigateTo('home')" class="cursor-pointer flex items-center text-gray-700 hover:text-primary-empowermentPurple font-medium transition">
+                            <i data-lucide="home" class="w-4 h-4 mr-2"></i> Accueil
+                        </li>
+                        <li onclick="checkAuthAndNavigate('dashboard')" class="cursor-pointer flex items-center text-gray-700 hover:text-primary-empowermentPurple font-medium transition">
+                            <i data-lucide="user" class="w-4 h-4 mr-2"></i> Tableau de Bord
+                        </li>
+                        <li onclick="navigateTo('marketplace')" class="cursor-pointer flex items-center text-gray-700 hover:text-primary-empowermentPurple font-medium transition">
+    <i data-lucide="shopping-bag" class="w-4 h-4 mr-2"></i> Opportunités
+</li>
+                        <li onclick="checkAuthAndNavigate('formations')" class="cursor-pointer flex items-center text-gray-700 hover:text-primary-empowermentPurple font-medium transition">
+                            <i data-lucide="book-open" class="w-4 h-4 mr-2"></i> Formations
+                        </li>
+                        <li onclick="checkAuthAndNavigate('finances')" class="cursor-pointer flex items-center text-gray-700 hover:text-primary-empowermentPurple font-medium transition">
+                            <i data-lucide="banknote" class="w-4 h-4 mr-2"></i> Finances
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Auth Buttons (Desktop) - VISIBLE SEULEMENT QUAND NON CONNECTÉ -->
+                <div class="hidden md:flex items-center space-x-4" id="auth-buttons-desktop">
+                    <button onclick="navigateTo('login')" class="text-primary-empowermentPurple font-medium hover:text-purple-600 transition">
+                        Connexion
+                    </button>
+                    <button onclick="navigateTo('register')" class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-xl font-medium hover:bg-purple-600 transition">
+                        S'inscrire
+                    </button>
+                </div>
+
+                <!-- User Menu (Desktop) - VISIBLE SEULEMENT QUAND CONNECTÉ -->
+                <div class="hidden md:flex items-center space-x-4" id="user-menu-desktop">
+                    <div class="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-xl">
+                        <div class="w-8 h-8 bg-primary-empowermentPurple rounded-full flex items-center justify-center text-white font-bold text-sm" id="user-avatar">
+                            U
+                        </div>
+                        <span class="font-medium text-gray-700" id="user-name">Utilisatrice</span>
+                        <button onclick="logout()" class="text-gray-500 hover:text-red-500 transition ml-2" title="Déconnexion">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden p-2 text-gray-600" onclick="toggleMobileMenu()">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 p-4 shadow-lg">
+            <ul class="space-y-4">
+                <li onclick="navigateTo('home')" class="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <i data-lucide="home" class="w-5 h-5 mr-3 text-primary-empowermentPurple"></i> Accueil
+                </li>
+                <li onclick="checkAuthAndNavigate('dashboard')" class="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <i data-lucide="user" class="w-5 h-5 mr-3 text-primary-empowermentPurple"></i> Tableau de Bord
+                </li>
+                <li onclick="navigateTo('marketplace')" class="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 mr-3 text-primary-empowermentPurple"></i> Opportunités
+                </li>
+                <li onclick="checkAuthAndNavigate('formations')" class="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <i data-lucide="book-open" class="w-5 h-5 mr-3 text-primary-empowermentPurple"></i> Formations
+                </li>
+                <li onclick="checkAuthAndNavigate('finances')" class="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <i data-lucide="banknote" class="w-5 h-5 mr-3 text-primary-empowermentPurple"></i> Finances
+                </li>
+                
+                <!-- Mobile Auth Buttons - VISIBLE SEULEMENT QUAND NON CONNECTÉ -->
+                <div class="pt-4 border-t border-gray-100" id="auth-buttons-mobile">
+                    <li onclick="navigateTo('login')" class="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                        <i data-lucide="log-in" class="w-5 h-5 mr-3 text-primary-empowermentPurple"></i> Connexion
+                    </li>
+                    <li onclick="navigateTo('register')" class="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                        <i data-lucide="user-plus" class="w-5 h-5 mr-3 text-primary-empowermentPurple"></i> S'inscrire
+                    </li>
+                </div>
+
+                <!-- Mobile User Menu - VISIBLE SEULEMENT QUAND CONNECTÉ -->
+                <div class="pt-4 border-t border-gray-100" id="user-menu-mobile">
+                    <li class="flex items-center justify-between p-2">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-primary-empowermentPurple rounded-full flex items-center justify-center text-white font-bold text-sm mr-3" id="user-avatar-mobile">
+                                U
+                            </div>
+                            <span class="font-medium" id="user-name-mobile">Utilisatrice</span>
+                        </div>
+                        <button onclick="logout()" class="text-red-500 hover:text-red-700 p-2">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                        </button>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow relative">
+
+       <!-- HOME VIEW -->
+<section id="view-home" class="view-section active">
+    <!-- Hero différente pour utilisateur connecté -->
+    <div class="bg-gradient-to-br from-primary-empowermentPurple to-purple-600 text-white py-16 px-4 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
+        <div class="max-w-7xl mx-auto text-center relative z-10 animate-slide-up">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
+                Bon retour, <span class="text-primary-sunshineYellow" id="home-username">Aisha</span> !
+            </h2>
+            <p class="text-xl md:text-2xl font-light mb-8 max-w-2xl mx-auto opacity-90">
+                Continuez votre parcours vers l'autonomisation. Voici votre activité récente.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="navigateTo('dashboard')" class="bg-white text-primary-empowermentPurple px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-gray-100 transition flex items-center justify-center">
+                    <i data-lucide="activity" class="mr-2"></i> Voir mon tableau de bord
+                </button>
+                <button onclick="navigateTo('marketplace')" class="bg-primary-senegalGreen text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-green-600 transition flex items-center justify-center">
+                    <i data-lucide="zap" class="mr-2"></i> Découvrir des opportunités
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl shadow-xl text-center">
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i data-lucide="target" class="text-primary-senegalGreen w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900" id="home-progress">35%</h3>
+                <p class="text-gray-500 text-xs font-medium">Progression</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-xl text-center">
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i data-lucide="book-open" class="text-primary-empowermentPurple w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900" id="home-courses">3</h3>
+                <p class="text-gray-500 text-xs font-medium">Formations</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-xl text-center">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i data-lucide="briefcase" class="text-blue-600 w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900" id="home-opportunities">12</h3>
+                <p class="text-gray-500 text-xs font-medium">Matchs</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-xl text-center">
+                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i data-lucide="users" class="text-yellow-600 w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900" id="home-network">24</h3>
+                <p class="text-gray-500 text-xs font-medium">Réseau</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content for Logged-in Users -->
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Today's Priority -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center text-primary-empowermentPurple">
+                        <i data-lucide="flag" class="mr-3"></i>
+                        Priorité du Jour
+                    </h3>
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                <i data-lucide="book-open" class="text-blue-600 w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-2">Continuer la formation Gestion d'Entreprise</h4>
+                                <p class="text-gray-600 mb-3">Module 3: Contrôle des Stocks et Inventaire - 40% complété</p>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="startCourse('gestion-entreprise')" class="bg-primary-senegalGreen text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition flex items-center">
+                                        <i data-lucide="play" class="mr-2"></i> Reprendre
+                                    </button>
+                                    <span class="text-sm text-gray-500">18:45 min restantes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommended Opportunities -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold flex items-center text-primary-senegalGreen">
+                            <i data-lucide="zap" class="mr-3"></i>
+                            Opportunités pour Vous
+                        </h3>
+                        <button onclick="navigateTo('marketplace')" class="text-primary-empowermentPurple font-semibold hover:underline flex items-center">
+                            Voir tout <i data-lucide="arrow-right" class="ml-1 w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border border-gray-200 rounded-xl p-4 hover:border-primary-empowermentPurple transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold">Match 95%</span>
+                                <i data-lucide="heart" class="text-gray-300 hover:text-red-500 w-4 h-4"></i>
+                            </div>
+                            <h4 class="font-bold mb-1">Formation Gestion d'Entreprise</h4>
+                            <p class="text-sm text-gray-600 mb-3">Apprenez à gérer votre trésorerie efficacement</p>
+                            <button class="w-full bg-gray-100 text-gray-800 py-2 rounded-lg font-semibold hover:bg-primary-empowermentPurple hover:text-white transition text-sm">
+                                S'inscrire
+                            </button>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-4 hover:border-primary-empowermentPurple transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-semibold">Match 88%</span>
+                                <i data-lucide="heart" class="text-gray-300 hover:text-red-500 w-4 h-4"></i>
+                            </div>
+                            <h4 class="font-bold mb-1">Micro-crédit Agriculture</h4>
+                            <p class="text-sm text-gray-600 mb-3">Financement jusqu'à 500,000 FCFA</p>
+                            <button class="w-full bg-gray-100 text-gray-800 py-2 rounded-lg font-semibold hover:bg-primary-empowermentPurple hover:text-white transition text-sm">
+                                Demander
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Activity -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center text-primary-deepRed">
+                        <i data-lucide="users" class="mr-3"></i>
+                        Activité de la Communauté
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="w-10 h-10 bg-primary-empowermentPurple rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                F
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="font-semibold">Fatou Diop</p>
+                                        <p class="text-sm text-gray-600">A obtenu un financement de 500K FCFA pour son atelier de couture</p>
+                                    </div>
+                                    <span class="text-xs text-gray-400">Il y a 2h</span>
+                                </div>
+                                <div class="flex gap-2 mt-2">
+                                    <button class="text-xs text-primary-empowermentPurple hover:underline">Féliciter</button>
+                                    <button class="text-xs text-gray-500 hover:underline">Commenter</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="w-10 h-10 bg-primary-senegalGreen rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                A
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="font-semibold">Aminata Sow</p>
+                                        <p class="text-sm text-gray-600">A terminé la formation Vente Digitale avec succès</p>
+                                    </div>
+                                    <span class="text-xs text-gray-400">Il y a 5h</span>
+                                </div>
+                                <div class="flex gap-2 mt-2">
+                                    <button class="text-xs text-primary-empowermentPurple hover:underline">Féliciter</button>
+                                    <button class="text-xs text-gray-500 hover:underline">Commenter</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-8">
+                <!-- Upcoming Events -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center text-primary-empowermentPurple">
+                        <i data-lucide="calendar" class="mr-2"></i>
+                        Événements à Venir
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                <i data-lucide="video" class="text-blue-600 w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-sm">Webinar: Financement</p>
+                                <p class="text-xs text-gray-500">Demain, 15:00</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-green-50 rounded-lg border border-green-100">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                <i data-lucide="users" class="text-green-600 w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-sm">Rencontre Entrepreneures</p>
+                                <p class="text-xs text-gray-500">25 Nov, 10:00</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 text-center text-primary-empowermentPurple font-semibold text-sm hover:underline">
+                        Voir tous les événements
+                    </button>
+                </div>
+
+                <!-- Quick Progress -->
+                <div class="bg-gradient-to-br from-primary-senegalGreen to-green-600 text-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-2">Votre Progression</h3>
+                    <p class="text-sm opacity-90 mb-4">Vous progressez bien vers vos objectifs !</p>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Formations</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="h-2 bg-white/30 rounded-full overflow-hidden">
+                                <div class="h-full bg-white w-3/5"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Objectifs Financiers</span>
+                                <span>70%</span>
+                            </div>
+                            <div class="h-2 bg-white/30 rounded-full overflow-hidden">
+                                <div class="h-full bg-white w-[70%]"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Réseau</span>
+                                <span>40%</span>
+                            </div>
+                            <div class="h-2 bg-white/30 rounded-full overflow-hidden">
+                                <div class="h-full bg-white w-2/5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4">Actions Rapides</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="navigateTo('formations')" class="p-3 bg-purple-50 text-purple-600 rounded-xl flex flex-col items-center justify-center hover:bg-purple-100 transition">
+                            <i data-lucide="book-open" class="mb-1"></i>
+                            <span class="text-xs font-bold">Formations</span>
+                        </button>
+                        <button onclick="navigateTo('finances')" class="p-3 bg-green-50 text-green-600 rounded-xl flex flex-col items-center justify-center hover:bg-green-100 transition">
+                            <i data-lucide="banknote" class="mb-1"></i>
+                            <span class="text-xs font-bold">Finances</span>
+                        </button>
+                        <button onclick="navigateTo('mentorat')" class="p-3 bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center justify-center hover:bg-blue-100 transition">
+                            <i data-lucide="user-plus" class="mb-1"></i>
+                            <span class="text-xs font-bold">Mentor</span>
+                        </button>
+                        <button onclick="navigateTo('marketplace')" class="p-3 bg-orange-50 text-orange-600 rounded-xl flex flex-col items-center justify-center hover:bg-orange-100 transition">
+                            <i data-lucide="shopping-bag" class="mb-1"></i>
+                            <span class="text-xs font-bold">Opportunités</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+        <!-- LOGIN VIEW -->
+        <section id="view-login" class="view-section">
+            <div class="min-h-[80vh] flex items-center justify-center bg-gray-50 p-4">
+                <div class="bg-white w-full max-w-md p-8 rounded-2xl shadow-2xl animate-slide-up">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-primary-empowermentPurple mb-2">Connexion</h2>
+                        <p class="text-gray-600">Accédez à votre compte Femmes 2030</p>
+                    </div>
+
+                    <form id="login-form">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" id="login-email" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-empowermentPurple outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                                <input type="password" id="login-password" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-empowermentPurple outline-none transition">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary-empowermentPurple focus:ring-primary-empowermentPurple">
+                                    <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
+                                </label>
+                                <button type="button" class="text-sm text-primary-empowermentPurple hover:underline">
+                                    Mot de passe oublié ?
+                                </button>
+                            </div>
+                            <button type="submit" class="w-full bg-primary-senegalGreen text-white py-3 rounded-xl font-bold hover:opacity-90 transition flex items-center justify-center">
+                                <span id="login-btn-text">Se connecter</span>
+                                <div id="login-loading" class="loader ml-2 hidden"></div>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Test Users Info -->
+                    <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <h4 class="text-sm font-semibold text-blue-800 mb-2 flex items-center">
+                            <i data-lucide="info" class="w-4 h-4 mr-1"></i>
+                            Comptes de test
+                        </h4>
+                        <div class="text-xs text-blue-700 space-y-1">
+                            <div><strong>Entrepreneure:</strong> fatou@test.com / password123</div>
+                            <div><strong>Chercheuse:</strong> amina@test.com / password123</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <p class="text-gray-600">
+                            Pas encore membre ? 
+                            <button onclick="navigateTo('register')" class="text-primary-empowermentPurple font-semibold hover:underline">
+                                Créer un compte
+                            </button>
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <button onclick="navigateTo('home')" class="w-full text-gray-600 py-2 rounded-xl font-medium hover:text-gray-800 transition flex items-center justify-center">
+                            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                            Retour à l'accueil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REGISTER VIEW -->
+        <section id="view-register" class="view-section">
+            <div class="min-h-[80vh] flex items-center justify-center bg-gray-50 p-4">
+                <div class="bg-white w-full max-w-md p-8 rounded-2xl shadow-2xl animate-slide-up">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-primary-empowermentPurple mb-2">Créer un compte</h2>
+                        <p class="text-gray-600">Rejoignez la communauté Femmes 2030</p>
+                    </div>
+
+                    <form id="register-form">
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                                    <input type="text" id="register-firstname" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-empowermentPurple outline-none transition">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                                    <input type="text" id="register-lastname" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-empowermentPurple outline-none transition">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" id="register-email" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-empowermentPurple outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                                <input type="tel" id="register-phone" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-empowermentPurple outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                                <input type="password" id="register-password" required minlength="6" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-empowermentPurple outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Confirmer le mot de passe</label>
+                                <input type="password" id="register-password-confirm" required minlength="6" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-empowermentPurple outline-none transition">
+                            </div>
+                            <div class="flex items-start">
+                                <input type="checkbox" id="register-terms" required class="rounded border-gray-300 text-primary-empowermentPurple focus:ring-primary-empowermentPurple mt-1">
+                                <label for="register-terms" class="ml-2 text-sm text-gray-600">
+                                    J'accepte les 
+                                    <button type="button" class="text-primary-empowermentPurple hover:underline">conditions d'utilisation</button>
+                                    et la 
+                                    <button type="button" class="text-primary-empowermentPurple hover:underline">politique de confidentialité</button>
+                                </label>
+                            </div>
+                            <button type="submit" class="w-full bg-primary-senegalGreen text-white py-3 rounded-xl font-bold hover:opacity-90 transition flex items-center justify-center">
+                                <span id="register-btn-text">Créer mon compte</span>
+                                <div id="register-loading" class="loader ml-2 hidden"></div>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-6 text-center">
+                        <p class="text-gray-600">
+                            Déjà membre ? 
+                            <button onclick="navigateTo('login')" class="text-primary-empowermentPurple font-semibold hover:underline">
+                                Se connecter
+                            </button>
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <button onclick="navigateTo('home')" class="w-full text-gray-600 py-2 rounded-xl font-medium hover:text-gray-800 transition flex items-center justify-center">
+                            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                            Retour à l'accueil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD VIEW -->
+<section id="view-dashboard" class="view-section">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Tableau de Bord</h2>
+            <p class="text-gray-500">Bienvenue, <span class="text-primary-empowermentPurple" id="dashboard-username">Aisha</span> ! Voici votre activité récente.</p>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 text-xs uppercase font-bold">Progression</div>
+                <div class="text-lg font-bold mt-1 text-primary-sunshineYellow">35%</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 text-xs uppercase font-bold">Opportunités</div>
+                <div class="text-lg font-bold mt-1 text-primary-empowermentPurple">12 Matchs</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 text-xs uppercase font-bold">Formations</div>
+                <div class="text-lg font-bold mt-1 text-primary-senegalGreen">3/5</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 text-xs uppercase font-bold">Épargne</div>
+                <div class="text-lg font-bold mt-1 text-primary-deepRed">350K FCFA</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Main Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Financial Goal Progress -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i data-lucide="target" class="mr-2 text-primary-empowermentPurple"></i> 
+                        Objectif Financier
+                    </h3>
+                    <div class="flex justify-between mb-2">
+                        <span class="font-semibold" id="goal-display-name">Machine à coudre</span>
+                        <span class="text-gray-500" id="goal-display-amount">350.000 / 500.000 FCFA</span>
+                    </div>
+                    <div class="h-4 bg-gray-200 rounded-full overflow-hidden relative mb-3">
+                        <div class="h-full bg-primary-senegalGreen w-[70%] relative">
+                            <div class="absolute right-0 top-0 h-full w-1 bg-white opacity-30 animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>70% atteint</span>
+                        <span>150K FCFA restants</span>
+                    </div>
+                    <button onclick="navigateTo('finances')" class="mt-4 text-sm font-bold text-primary-empowermentPurple hover:underline">
+                        Gérer mon épargne →
+                    </button>
+                </div>
+
+                <!-- Recommended Opportunities -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i data-lucide="zap" class="mr-2 text-primary-senegalGreen"></i> 
+                        Opportunités Recommandées
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="book-open" class="text-green-600 w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-sm">Formation Gestion</p>
+                                    <p class="text-xs text-gray-500">Match à 95%</p>
+                                </div>
+                            </div>
+                            <button class="bg-primary-senegalGreen text-white px-3 py-1 rounded-lg text-xs font-semibold hover:bg-green-600 transition">
+                                Voir
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="briefcase" class="text-purple-600 w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-sm">Vendeuse Boutique</p>
+                                    <p class="text-xs text-gray-500">Dakar Plateau</p>
+                                </div>
+                            </div>
+                            <button class="bg-primary-empowermentPurple text-white px-3 py-1 rounded-lg text-xs font-semibold hover:bg-purple-600 transition">
+                                Postuler
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="navigateTo('marketplace')" class="w-full mt-4 text-center text-primary-empowermentPurple font-semibold text-sm hover:underline">
+                        Voir toutes les opportunités →
+                    </button>
+                </div>
+
+                <!-- Training Progress -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i data-lucide="book-open" class="mr-2 text-primary-empowermentPurple"></i> 
+                        Mes Formations
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="font-semibold">Gestion Financière</p>
+                                <p class="text-sm text-gray-500">2/5 modules complétés</p>
+                                <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                                    <div class="h-full bg-primary-senegalGreen w-2/5"></div>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 relative">
+                                <svg class="w-12 h-12 progress-ring" viewBox="0 0 36 36">
+                                    <circle class="text-gray-200" stroke-width="3" fill="transparent" r="16" cx="18" cy="18"/>
+                                    <circle class="text-primary-senegalGreen progress-ring-circle" stroke-width="3" stroke-dasharray="100" stroke-dashoffset="60" fill="transparent" r="16" cx="18" cy="18"/>
+                                </svg>
+                                <span class="absolute inset-0 flex items-center justify-center text-xs font-bold">40%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="font-semibold">Vente Digitale</p>
+                                <p class="text-sm text-gray-500">0/4 modules complétés</p>
+                                <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                                    <div class="h-full bg-primary-senegalGreen w-0"></div>
+                                </div>
+                            </div>
+                            <button onclick="navigateTo('formations')" class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+                                Commencer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Column -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-lg font-bold mb-4">Actions Rapides</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="navigateTo('finances')" class="p-3 bg-red-50 text-red-600 rounded-xl flex flex-col items-center justify-center hover:bg-red-100 transition">
+                            <i data-lucide="banknote" class="mb-1"></i>
+                            <span class="text-xs font-bold">Crédit</span>
+                        </button>
+                        <button onclick="navigateTo('mentorat')" class="p-3 bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center justify-center hover:bg-blue-100 transition">
+                            <i data-lucide="user-plus" class="mb-1"></i>
+                            <span class="text-xs font-bold">Mentor</span>
+                        </button>
+                        <button onclick="navigateTo('formations')" class="p-3 bg-purple-50 text-purple-600 rounded-xl flex flex-col items-center justify-center hover:bg-purple-100 transition">
+                            <i data-lucide="book-open" class="mb-1"></i>
+                            <span class="text-xs font-bold">Cours</span>
+                        </button>
+                        <button onclick="navigateTo('marketplace')" class="p-3 bg-green-50 text-green-600 rounded-xl flex flex-col items-center justify-center hover:bg-green-100 transition">
+                            <i data-lucide="shopping-bag" class="mb-1"></i>
+                            <span class="text-xs font-bold">Offres</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Community Activity -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <i data-lucide="users" class="mr-2 text-primary-senegalGreen"></i> 
+                        Communauté
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-primary-empowermentPurple rounded-full flex items-center justify-center text-white font-bold text-xs mt-1">
+                                F
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-sm">Fatou D.</p>
+                                <p class="text-xs text-gray-600">A obtenu un financement de 500K FCFA</p>
+                                <p class="text-xs text-gray-400 mt-1">Il y a 2h</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-primary-senegalGreen rounded-full flex items-center justify-center text-white font-bold text-xs mt-1">
+                                M
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-sm">Mariama S.</p>
+                                <p class="text-xs text-gray-600">A terminé la formation Vente Digitale</p>
+                                <p class="text-xs text-gray-400 mt-1">Il y a 1j</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 text-center text-primary-empowermentPurple font-semibold text-sm hover:underline">
+                        Rejoindre la communauté →
+                    </button>
+                </div>
+
+                <!-- Progress Overview -->
+                <div class="bg-gradient-to-br from-primary-empowermentPurple to-purple-600 text-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-lg font-bold mb-2">Votre Progression</h3>
+                    <p class="text-sm opacity-90 mb-4">Continuez sur votre lancée vers l'autonomisation</p>
+                    <div class="h-2 bg-white/30 rounded-full overflow-hidden mb-2">
+                        <div class="h-full bg-white w-1/3"></div>
+                    </div>
+                    <div class="flex justify-between text-xs opacity-90">
+                        <span>35% complété</span>
+                        <span>Prochain niveau</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="mt-8 bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <i data-lucide="activity" class="mr-2 text-primary-senegalGreen"></i> 
+                Activité Récente
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="text-center p-4 bg-blue-50 rounded-xl">
+                    <i data-lucide="book-open" class="w-8 h-8 text-blue-600 mx-auto mb-2"></i>
+                    <p class="font-semibold text-sm">Formations</p>
+                    <p class="text-2xl font-bold text-blue-600">3</p>
+                    <p class="text-xs text-gray-500">en cours</p>
+                </div>
+                
+                <div class="text-center p-4 bg-green-50 rounded-xl">
+                    <i data-lucide="check-circle" class="w-8 h-8 text-green-600 mx-auto mb-2"></i>
+                    <p class="font-semibold text-sm">Complétés</p>
+                    <p class="text-2xl font-bold text-green-600">12</p>
+                    <p class="text-xs text-gray-500">modules</p>
+                </div>
+                
+                <div class="text-center p-4 bg-purple-50 rounded-xl">
+                    <i data-lucide="target" class="w-8 h-8 text-purple-600 mx-auto mb-2"></i>
+                    <p class="font-semibold text-sm">Objectifs</p>
+                    <p class="text-2xl font-bold text-purple-600">2</p>
+                    <p class="text-xs text-gray-500">en cours</p>
+                </div>
+                
+                <div class="text-center p-4 bg-orange-50 rounded-xl">
+                    <i data-lucide="users" class="w-8 h-8 text-orange-600 mx-auto mb-2"></i>
+                    <p class="font-semibold text-sm">Réseau</p>
+                    <p class="text-2xl font-bold text-orange-600">24</p>
+                    <p class="text-xs text-gray-500">contacts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- FINANCES VIEW -->
+<section id="view-finances" class="view-section">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Mes Finances</h2>
+            <p class="text-gray-600">Gérez votre épargne, vos objectifs et vos demandes de crédit.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Financial Overview -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i data-lucide="trending-up" class="mr-2 text-primary-empowermentPurple"></i> 
+                        Aperçu Financier
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                            <p class="text-sm text-gray-600">Épargne Actuelle</p>
+                            <p class="text-2xl font-bold text-primary-senegalGreen">350,000 FCFA</p>
+                            <p class="text-xs text-green-600 mt-1">+25,000 ce mois</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                            <p class="text-sm text-gray-600">Objectif Mensuel</p>
+                            <p class="text-2xl font-bold text-primary-empowermentPurple">50,000 FCFA</p>
+                            <p class="text-xs text-purple-600 mt-1">70% atteint</p>
+                        </div>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="finance-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i data-lucide="list" class="mr-2 text-primary-senegalGreen"></i> 
+                        Dernières Transactions
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="download" class="text-green-600 w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-sm">Épargne Mensuelle</p>
+                                    <p class="text-xs text-gray-500">15 Nov 2024</p>
+                                </div>
+                            </div>
+                            <span class="text-green-600 font-bold">+25,000 FCFA</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="shopping-cart" class="text-red-600 w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-sm">Achat Matériel</p>
+                                    <p class="text-xs text-gray-500">10 Nov 2024</p>
+                                </div>
+                            </div>
+                            <span class="text-red-600 font-bold">-15,000 FCFA</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="dollar-sign" class="text-green-600 w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-sm">Vente Produits</p>
+                                    <p class="text-xs text-gray-500">5 Nov 2024</p>
+                                </div>
+                            </div>
+                            <span class="text-green-600 font-bold">+42,500 FCFA</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="book-open" class="text-blue-600 w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-sm">Formation</p>
+                                    <p class="text-xs text-gray-500">1 Nov 2024</p>
+                                </div>
+                            </div>
+                            <span class="text-red-600 font-bold">-20,000 FCFA</span>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 text-center text-primary-empowermentPurple font-semibold text-sm hover:underline">
+                        Voir toutes les transactions →
+                    </button>
+                </div>
+
+                <!-- Microcredit Calculator -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i data-lucide="calculator" class="mr-2 text-primary-empowermentPurple"></i> 
+                        Simulateur de Microcrédit
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Montant souhaité (FCFA)</label>
+                            <input type="range" id="loan-amount" min="50000" max="1000000" step="50000" value="300000" class="w-full">
+                            <div class="flex justify-between text-sm text-gray-500 mt-1">
+                                <span>50,000</span>
+                                <span id="loan-amount-display" class="font-semibold">300,000</span>
+                                <span>1,000,000</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Durée (mois)</label>
+                            <input type="range" id="loan-duration" min="3" max="24" step="3" value="12" class="w-full">
+                            <div class="flex justify-between text-sm text-gray-500 mt-1">
+                                <span>3 mois</span>
+                                <span id="loan-duration-display" class="font-semibold">12 mois</span>
+                                <span>24 mois</span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <p class="text-sm text-gray-600">Taux d'intérêt</p>
+                                <p class="text-xl font-bold text-primary-senegalGreen">5%</p>
+                                <p class="text-xs text-gray-500">annuel</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <p class="text-sm text-gray-600">Mensualité estimée</p>
+                                <p class="text-xl font-bold text-primary-empowermentPurple" id="monthly-payment">27,500 FCFA</p>
+                                <p class="text-xs text-gray-500">par mois</p>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-primary-senegalGreen text-white py-3 rounded-xl font-bold hover:opacity-90 transition flex items-center justify-center">
+                            <i data-lucide="send" class="mr-2"></i>
+                            Demander ce crédit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Financial Goals -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i data-lucide="target" class="mr-2 text-primary-senegalGreen"></i> 
+                        Mes Objectifs
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-green-50 rounded-xl border border-green-100">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-semibold text-sm">Machine à coudre</span>
+                                <span class="text-xs text-gray-500">70%</span>
+                            </div>
+                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-primary-senegalGreen w-[70%]"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">350,000 / 500,000 FCFA</p>
+                            <div class="flex justify-between text-xs text-green-600 mt-2">
+                                <span>+25K ce mois</span>
+                                <span>150K restants</span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-semibold text-sm">Formation Avancée</span>
+                                <span class="text-xs text-gray-500">45%</span>
+                            </div>
+                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-500 w-[45%]"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">45,000 / 100,000 FCFA</p>
+                            <div class="flex justify-between text-xs text-blue-600 mt-2">
+                                <span>+15K ce mois</span>
+                                <span>55K restants</span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-semibold text-sm">Fond de Roulement</span>
+                                <span class="text-xs text-gray-500">25%</span>
+                            </div>
+                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-purple-500 w-1/4"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">125,000 / 500,000 FCFA</p>
+                            <div class="flex justify-between text-xs text-purple-600 mt-2">
+                                <span>+10K ce mois</span>
+                                <span>375K restants</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 text-primary-empowermentPurple font-semibold text-sm hover:underline flex items-center justify-center">
+                        <i data-lucide="plus" class="mr-1"></i>
+                        Ajouter un objectif
+                    </button>
+                </div>
+
+                <!-- Savings Tips -->
+                <div class="bg-gradient-to-br from-primary-senegalGreen to-green-600 text-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-lg font-bold mb-2">Conseil Épargne</h3>
+                    <p class="text-sm opacity-90 mb-4">Épargnez 20% de vos revenus chaque mois pour atteindre vos objectifs plus rapidement.</p>
+                    <div class="flex items-center text-xs opacity-80">
+                        <i data-lucide="lightbulb" class="mr-1"></i>
+                        <span>Astuce du jour</span>
+                    </div>
+                </div>
+
+                <!-- Credit History -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="text-lg font-bold mb-4">Historique Crédit</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-semibold text-sm">Crédit Business</p>
+                                <p class="text-xs text-gray-500">Oct 2024</p>
+                            </div>
+                            <span class="text-green-600 font-bold text-sm">Approuvé</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-semibold text-sm">Micro-crédit</p>
+                                <p class="text-xs text-gray-500">Juil 2024</p>
+                            </div>
+                            <span class="text-green-600 font-bold text-sm">Remboursé</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-semibold text-sm">Prêt Formation</p>
+                                <p class="text-xs text-gray-500">Mar 2024</p>
+                            </div>
+                            <span class="text-green-600 font-bold text-sm">Remboursé</span>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 text-center text-primary-empowermentPurple font-semibold text-sm hover:underline">
+                        Voir l'historique complet →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 text-center">
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="download" class="text-green-600 w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">Faire un Dépôt</h3>
+                <p class="text-sm text-gray-600 mb-4">Ajoutez des fonds à votre épargne</p>
+                <button class="bg-primary-senegalGreen text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition w-full">
+                    Dépôt
+                </button>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 text-center">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="send" class="text-blue-600 w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">Demande Crédit</h3>
+                <p class="text-sm text-gray-600 mb-4">Soumettez une demande de financement</p>
+                <button class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 transition w-full">
+                    Demander
+                </button>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 text-center">
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="file-text" class="text-purple-600 w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">Rapport Mensuel</h3>
+                <p class="text-sm text-gray-600 mb-4">Téléchargez votre rapport financier</p>
+                <button class="bg-gray-800 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700 transition w-full">
+                    Télécharger
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- FORMATIONS VIEW -->
+<section id="view-formations" class="view-section">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Formations</h2>
+            <p class="text-gray-600">Développez vos compétences avec nos cours adaptés aux entrepreneures.</p>
+        </div>
+
+        <!-- Featured Course -->
+        <div class="bg-gradient-to-r from-primary-senegalGreen to-green-600 text-white p-6 rounded-2xl mb-8 shadow-lg">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-2/3 mb-4 md:mb-0">
+                    <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-semibold mb-3 inline-block">Formation vedette</span>
+                    <h3 class="text-2xl font-bold mb-2">Gestion d'Entreprise pour Débutantes</h3>
+                    <p class="mb-4 opacity-90">Apprenez à gérer votre trésorerie, vos stocks et vos clients efficacement. Parfait pour les femmes qui démarrent leur business.</p>
+                    <div class="flex items-center flex-wrap gap-4">
+                        <div class="flex items-center">
+                            <i data-lucide="play-circle" class="mr-2"></i>
+                            <span>12 vidéos</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-lucide="clock" class="mr-2"></i>
+                            <span>4 heures</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-lucide="users" class="mr-2"></i>
+                            <span>1,200 apprenantes</span>
+                        </div>
+                        <div class="flex items-center text-yellow-300">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <span class="text-white ml-1">(4.9/5)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/3 text-center">
+                    <button onclick="startCourse('gestion-entreprise')" class="bg-white text-primary-senegalGreen px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition flex items-center mx-auto">
+                        <i data-lucide="play" class="mr-2"></i> Commencer
+                    </button>
+                    <p class="text-white/80 text-sm mt-2">Gratuit pour les membres</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Categories -->
+        <div class="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2">
+            <button class="px-4 py-1.5 bg-primary-empowermentPurple text-white rounded-full text-sm font-medium shadow-sm">Toutes</button>
+            <button class="px-4 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full text-sm font-medium">Business</button>
+            <button class="px-4 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full text-sm font-medium">Digital</button>
+            <button class="px-4 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full text-sm font-medium">Finance</button>
+            <button class="px-4 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full text-sm font-medium">Leadership</button>
+            <button class="px-4 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full text-sm font-medium">Artisanat</button>
+        </div>
+
+        <!-- Courses Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Course 1 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition cursor-pointer">
+                <div class="w-full h-40 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl mb-4 flex items-center justify-center relative">
+                    <i data-lucide="shopping-cart" class="w-12 h-12 text-white"></i>
+                    <div class="absolute top-3 right-3 bg-white/20 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        Populaire
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Vente Digitale & E-commerce</h3>
+                <p class="text-sm text-gray-600 mb-4">Apprenez à vendre vos produits en ligne et développer votre présence digitale.</p>
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i data-lucide="play-circle" class="w-4 h-4 mr-1"></i>
+                        <span>8 modules</span>
+                    </div>
+                    <div class="flex items-center text-yellow-500">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <span class="text-sm text-gray-600 ml-1">4.8</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500">4 heures</span>
+                    <button onclick="startCourse('vente-digitale')" class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+                        Démarrer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course 2 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition cursor-pointer">
+                <div class="w-full h-40 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl mb-4 flex items-center justify-center">
+                    <i data-lucide="dollar-sign" class="w-12 h-12 text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Finance Personnelle & Épargne</h3>
+                <p class="text-sm text-gray-600 mb-4">Gérez votre budget, épargnez efficacement et planifiez vos projets financiers.</p>
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i data-lucide="play-circle" class="w-4 h-4 mr-1"></i>
+                        <span>6 modules</span>
+                    </div>
+                    <div class="flex items-center text-yellow-500">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <span class="text-sm text-gray-600 ml-1">4.7</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500">3 heures</span>
+                    <button onclick="startCourse('finance-personnelle')" class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+                        Démarrer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course 3 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition cursor-pointer">
+                <div class="w-full h-40 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl mb-4 flex items-center justify-center">
+                    <i data-lucide="users" class="w-12 h-12 text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Leadership Féminin</h3>
+                <p class="text-sm text-gray-600 mb-4">Développez votre confiance, votre influence et votre capacité à mener.</p>
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i data-lucide="play-circle" class="w-4 h-4 mr-1"></i>
+                        <span>5 modules</span>
+                    </div>
+                    <div class="flex items-center text-yellow-500">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <span class="text-sm text-gray-600 ml-1">4.9</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500">2.5 heures</span>
+                    <button onclick="startCourse('leadership')" class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+                        Démarrer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course 4 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition cursor-pointer">
+                <div class="w-full h-40 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl mb-4 flex items-center justify-center">
+                    <i data-lucide="bar-chart" class="w-12 h-12 text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Analyse de Marché</h3>
+                <p class="text-sm text-gray-600 mb-4">Identifiez les opportunités et comprenez votre marché cible.</p>
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i data-lucide="play-circle" class="w-4 h-4 mr-1"></i>
+                        <span>7 modules</span>
+                    </div>
+                    <div class="flex items-center text-yellow-500">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <span class="text-sm text-gray-600 ml-1">4.6</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500">3.5 heures</span>
+                    <button onclick="startCourse('analyse-marche')" class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+                        Démarrer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course 5 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition cursor-pointer">
+                <div class="w-full h-40 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl mb-4 flex items-center justify-center">
+                    <i data-lucide="heart" class="w-12 h-12 text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Bien-être Entrepreneure</h3>
+                <p class="text-sm text-gray-600 mb-4">Gérez le stress et maintenez l'équilibre entre vie professionnelle et personnelle.</p>
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i data-lucide="play-circle" class="w-4 h-4 mr-1"></i>
+                        <span>4 modules</span>
+                    </div>
+                    <div class="flex items-center text-yellow-500">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <span class="text-sm text-gray-600 ml-1">4.8</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500">2 heures</span>
+                    <button onclick="startCourse('bien-etre')" class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+                        Démarrer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course 6 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition cursor-pointer">
+                <div class="w-full h-40 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl mb-4 flex items-center justify-center">
+                    <i data-lucide="smartphone" class="w-12 h-12 text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Marketing sur Mobile</h3>
+                <p class="text-sm text-gray-600 mb-4">Utilisez votre smartphone pour promouvoir votre business efficacement.</p>
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i data-lucide="play-circle" class="w-4 h-4 mr-1"></i>
+                        <span>5 modules</span>
+                    </div>
+                    <div class="flex items-center text-yellow-500">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <span class="text-sm text-gray-600 ml-1">4.5</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500">2.5 heures</span>
+                    <button onclick="startCourse('marketing-mobile')" class="bg-primary-empowermentPurple text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+                        Démarrer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <i data-lucide="award" class="mr-2 text-primary-empowermentPurple"></i> 
+                Ma Progression
+            </h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div class="flex-1">
+                        <p class="font-semibold">Gestion d'Entreprise</p>
+                        <p class="text-sm text-gray-500">2/5 modules complétés</p>
+                        <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                            <div class="h-full bg-primary-senegalGreen w-2/5"></div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-semibold text-primary-senegalGreen">40%</span>
+                        <p class="text-xs text-gray-500">En cours</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div class="flex-1">
+                        <p class="font-semibold">Vente Digitale</p>
+                        <p class="text-sm text-gray-500">0/4 modules complétés</p>
+                        <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                            <div class="h-full bg-primary-senegalGreen w-0"></div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-semibold text-gray-500">0%</span>
+                        <p class="text-xs text-gray-500">Non commencé</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div class="flex-1">
+                        <p class="font-semibold">Finance Personnelle</p>
+                        <p class="text-sm text-gray-500">6/6 modules complétés</p>
+                        <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                            <div class="h-full bg-green-500 w-full"></div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-semibold text-green-500">100%</span>
+                        <p class="text-xs text-gray-500">Terminé</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certificates -->
+            <div class="mt-6 pt-6 border-t border-gray-100">
+                <h4 class="text-lg font-bold mb-4 flex items-center">
+                    <i data-lucide="certificate" class="mr-2 text-primary-senegalGreen"></i>
+                    Mes Certificats
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex items-center p-3 bg-yellow-50 rounded-xl border border-yellow-100">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                            <i data-lucide="award" class="text-yellow-600 w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-sm">Finance Personnelle</p>
+                            <p class="text-xs text-gray-500">Obtenu le 15 Oct 2024</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center p-3 bg-blue-50 rounded-xl border border-blue-100">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i data-lucide="award" class="text-blue-600 w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-sm">Leadership Féminin</p>
+                            <p class="text-xs text-gray-500">Obtenu le 2 Sep 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Stats -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+                <div class="text-2xl font-bold text-primary-empowermentPurple mb-1">12</div>
+                <div class="text-sm text-gray-600">Heures apprises</div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+                <div class="text-2xl font-bold text-primary-senegalGreen mb-1">3</div>
+                <div class="text-sm text-gray-600">Formations suivies</div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+                <div class="text-2xl font-bold text-primary-deepRed mb-1">2</div>
+                <div class="text-sm text-gray-600">Certificats obtenus</div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+                <div class="text-2xl font-bold text-primary-sunshineYellow mb-1">85%</div>
+                <div class="text-sm text-gray-600">Taux de complétion</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- ONBOARDING VIEW -->
+        <section id="view-onboarding" class="view-section">
+            <div class="min-h-[80vh] flex items-center justify-center bg-gray-50 p-4">
+                <div class="bg-white w-full max-w-md p-8 rounded-2xl shadow-2xl animate-slide-up">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-primary-empowermentPurple mb-2">Complétez votre profil</h2>
+                        <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-primary-senegalGreen w-1/3 transition-all duration-500"></div>
+                        </div>
+                    </div>
+
+                    <div id="step-1" class="step-content">
+                        <h3 class="text-xl font-bold mb-4">Votre Rôle</h3>
+                        <div class="space-y-3 mb-6">
+                            <button onclick="selectRole(this, 'Entrepreneure')" class="role-btn w-full p-4 border-2 border-gray-200 rounded-xl text-left hover:border-primary-empowermentPurple hover:bg-purple-50 transition flex items-center">
+                                <i data-lucide="briefcase" class="mr-3 text-gray-400"></i> Entrepreneure
+                            </button>
+                            <button onclick="selectRole(this, 'Chercheuse d\'emploi')" class="role-btn w-full p-4 border-2 border-gray-200 rounded-xl text-left hover:border-primary-empowermentPurple hover:bg-purple-50 transition flex items-center">
+                                <i data-lucide="search" class="mr-3 text-gray-400"></i> Chercheuse d'emploi
+                            </button>
+                        </div>
+                        <button onclick="nextStep(2)" class="w-full bg-primary-senegalGreen text-white py-3 rounded-xl font-bold hover:opacity-90">Continuer</button>
+                    </div>
+
+                    <div id="step-2" class="step-content hidden">
+                        <h3 class="text-xl font-bold mb-4">Votre Objectif</h3>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Que souhaitez-vous accomplir ?</label>
+                            <input type="text" id="goal-name" class="w-full p-3 border border-gray-300 rounded-xl" placeholder="Ex: Développer mon business">
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="nextStep(1)" class="w-1/3 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold">Retour</button>
+                            <button onclick="completeOnboarding()" class="w-2/3 bg-primary-senegalGreen text-white py-3 rounded-xl font-bold">Terminer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- MARKETPLACE VIEW -->
+<section id="view-marketplace" class="view-section">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">Opportunités</h2>
+                <p class="text-gray-600">Découvrez des emplois, formations et financements adaptés à votre profil.</p>
+            </div>
+            <div class="mt-4 md:mt-0 w-full md:w-auto">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-gray-400"></i>
+                    <input type="text" placeholder="Rechercher..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full md:w-64 focus:ring-2 focus:ring-primary-empowermentPurple outline-none">
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2">
+            <button onclick="filterOpportunities('all')" class="px-4 py-1.5 bg-primary-empowermentPurple text-white rounded-full text-sm font-medium shadow-sm">Tout</button>
+            <button onclick="filterOpportunities('Emploi')" class="px-4 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full text-sm font-medium">Emploi</button>
+            <button onclick="filterOpportunities('Formation')" class="px-4 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full text-sm font-medium">Formation</button>
+            <button onclick="filterOpportunities('Finance')" class="px-4 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full text-sm font-medium">Finance</button>
+        </div>
+
+        <!-- Opportunities Grid -->
+        <div id="opportunities-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Opportunity 1 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl transition border border-gray-100 flex flex-col h-full">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="bg-primary-senegalGreen text-white text-xs px-3 py-1 rounded-full font-bold">Match 95%</span>
+                    <button class="text-gray-300 hover:text-red-500"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-1">Formation Gestion d'Entreprise</h3>
+                <div class="flex items-center text-xs text-gray-500 mb-3">
+                    <i data-lucide="book-open" class="w-3 h-3 mr-1"></i> Formation
+                    <span class="mx-2">|</span>
+                    <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> En Ligne
+                </div>
+                <p class="text-sm text-gray-600 mb-4 flex-grow">Apprenez à gérer votre trésorerie, stocks et clients efficacement.</p>
+                <button class="w-full mt-auto bg-gray-50 text-gray-800 py-2 rounded-xl font-semibold hover:bg-primary-empowermentPurple hover:text-white transition text-sm">
+                    Voir Détails
+                </button>
+            </div>
+
+            <!-- Opportunity 2 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl transition border border-gray-100 flex flex-col h-full">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="bg-primary-empowermentPurple text-white text-xs px-3 py-1 rounded-full font-bold">Match 88%</span>
+                    <button class="text-gray-300 hover:text-red-500"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-1">Vendeuse Boutique</h3>
+                <div class="flex items-center text-xs text-gray-500 mb-3">
+                    <i data-lucide="briefcase" class="w-3 h-3 mr-1"></i> Emploi
+                    <span class="mx-2">|</span>
+                    <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> Dakar Plateau
+                </div>
+                <p class="text-sm text-gray-600 mb-4 flex-grow">Boutique de luxe cherche vendeuse expérimentée.</p>
+                <button class="w-full mt-auto bg-gray-50 text-gray-800 py-2 rounded-xl font-semibold hover:bg-primary-empowermentPurple hover:text-white transition text-sm">
+                    Postuler
+                </button>
+            </div>
+
+            <!-- Opportunity 3 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl transition border border-gray-100 flex flex-col h-full">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="bg-primary-senegalGreen text-white text-xs px-3 py-1 rounded-full font-bold">Match 98%</span>
+                    <button class="text-gray-300 hover:text-red-500"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-1">Micro-crédit Agriculture</h3>
+                <div class="flex items-center text-xs text-gray-500 mb-3">
+                    <i data-lucide="banknote" class="w-3 h-3 mr-1"></i> Finance
+                    <span class="mx-2">|</span>
+                    <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> Thiès
+                </div>
+                <p class="text-sm text-gray-600 mb-4 flex-grow">Financement pour projets de maraîchage bio jusqu'à 500,000 FCFA.</p>
+                <button class="w-full mt-auto bg-gray-50 text-gray-800 py-2 rounded-xl font-semibold hover:bg-primary-empowermentPurple hover:text-white transition text-sm">
+                    Demander
+                </button>
+            </div>
+
+            <!-- Opportunity 4 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl transition border border-gray-100 flex flex-col h-full">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="bg-primary-empowermentPurple text-white text-xs px-3 py-1 rounded-full font-bold">Match 92%</span>
+                    <button class="text-gray-300 hover:text-red-500"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-1">Formation Vente Digitale</h3>
+                <div class="flex items-center text-xs text-gray-500 mb-3">
+                    <i data-lucide="book-open" class="w-3 h-3 mr-1"></i> Formation
+                    <span class="mx-2">|</span>
+                    <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> En Ligne
+                </div>
+                <p class="text-sm text-gray-600 mb-4 flex-grow">Apprenez à vendre vos produits sur les réseaux sociaux.</p>
+                <button class="w-full mt-auto bg-gray-50 text-gray-800 py-2 rounded-xl font-semibold hover:bg-primary-empowermentPurple hover:text-white transition text-sm">
+                    S'inscrire
+                </button>
+            </div>
+
+            <!-- Opportunity 5 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl transition border border-gray-100 flex flex-col h-full">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="bg-primary-senegalGreen text-white text-xs px-3 py-1 rounded-full font-bold">Match 85%</span>
+                    <button class="text-gray-300 hover:text-red-500"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-1">Comptable Junior</h3>
+                <div class="flex items-center text-xs text-gray-500 mb-3">
+                    <i data-lucide="briefcase" class="w-3 h-3 mr-1"></i> Emploi
+                    <span class="mx-2">|</span>
+                    <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> Mbour
+                </div>
+                <p class="text-sm text-gray-600 mb-4 flex-grow">PME cherche comptable pour tenue de livres et gestion.</p>
+                <button class="w-full mt-auto bg-gray-50 text-gray-800 py-2 rounded-xl font-semibold hover:bg-primary-empowermentPurple hover:text-white transition text-sm">
+                    Postuler
+                </button>
+            </div>
+
+            <!-- Opportunity 6 -->
+            <div class="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl transition border border-gray-100 flex flex-col h-full">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="bg-primary-empowermentPurple text-white text-xs px-3 py-1 rounded-full font-bold">Match 90%</span>
+                    <button class="text-gray-300 hover:text-red-500"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-1">Subvention Artisanat</h3>
+                <div class="flex items-center text-xs text-gray-500 mb-3">
+                    <i data-lucide="banknote" class="w-3 h-3 mr-1"></i> Finance
+                    <span class="mx-2">|</span>
+                    <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> Saint-Louis
+                </div>
+                <p class="text-sm text-gray-600 mb-4 flex-grow">Aide à l'achat de matières premières pour artisans.</p>
+                <button class="w-full mt-auto bg-gray-50 text-gray-800 py-2 rounded-xl font-semibold hover:bg-primary-empowermentPurple hover:text-white transition text-sm">
+                    Demander
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-gray-200 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center items-center mb-4 text-gray-400">
+                <i data-lucide="zap" class="w-5 h-5 mr-2 text-primary-senegalGreen"></i>
+                <span class="font-bold">FEMMES 2030</span>
+            </div>
+            <p class="text-sm text-gray-500">© 2024 Plateforme d'Autonomisation. Fait avec ❤️ au Sénégal.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // --- VARIABLES GLOBALES ---
+        const testUsers = {
+            "fatou@test.com": {
+                password: "password123",
+                firstName: "Fatou",
+                lastName: "Diop",
+                role: "Entrepreneure",
+                phone: "+221 77 123 45 67"
+            },
+            "amina@test.com": {
+                password: "password123", 
+                firstName: "Amina",
+                lastName: "Sarr",
+                role: "Chercheuse d'emploi",
+                phone: "+221 76 987 65 43"
+            }
+        };
+
+        const state = {
+            user: null,
+            isAuthenticated: false
+        };
+
+        // --- NAVIGATION ---
+        function navigateTo(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            const target = document.getElementById(`view-${viewId}`);
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+
+            document.getElementById('mobile-menu').classList.add('hidden');
+            updateAuthUI();
+            if (viewId === 'home' && state.isAuthenticated) {
+        updateHomeForLoggedInUser();
+    }
+        }
+
+        function checkAuthAndNavigate(viewId) {
+            if (!state.isAuthenticated && viewId !== 'home' && viewId !== 'login' && viewId !== 'register') {
+                navigateTo('login');
+            } else {
+                navigateTo(viewId);
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // --- AUTHENTIFICATION ---
+        function updateAuthUI() {
+            const isLoggedIn = state.isAuthenticated;
+            
+            // DESKTOP: Afficher soit les boutons de connexion, soit le menu utilisateur
+            const authButtonsDesktop = document.getElementById('auth-buttons-desktop');
+            const userMenuDesktop = document.getElementById('user-menu-desktop');
+            
+            if (isLoggedIn) {
+                // UTILISATEUR CONNECTÉ: Afficher le menu utilisateur, cacher les boutons de connexion
+                authButtonsDesktop.style.display = 'none';
+                userMenuDesktop.style.display = 'flex';
+                
+                if (state.user) {
+                    const firstLetter = state.user.firstName.charAt(0).toUpperCase();
+                    document.getElementById('user-avatar').textContent = firstLetter;
+                    document.getElementById('user-name').textContent = state.user.firstName;
+                    document.getElementById('dashboard-username').textContent = state.user.firstName;
+                    document.getElementById('dashboard-email').textContent = state.user.email;
+                    document.getElementById('dashboard-role').textContent = state.user.role || 'Non défini';
+                }
+            } else {
+                // UTILISATEUR NON CONNECTÉ: Afficher les boutons de connexion, cacher le menu utilisateur
+                authButtonsDesktop.style.display = 'flex';
+                userMenuDesktop.style.display = 'none';
+            }
+            
+            // MOBILE: Même logique pour le menu mobile
+            const authButtonsMobile = document.getElementById('auth-buttons-mobile');
+            const userMenuMobile = document.getElementById('user-menu-mobile');
+            
+            if (isLoggedIn) {
+                authButtonsMobile.style.display = 'none';
+                userMenuMobile.style.display = 'block';
+                
+                if (state.user) {
+                    const firstLetter = state.user.firstName.charAt(0).toUpperCase();
+                    document.getElementById('user-avatar-mobile').textContent = firstLetter;
+                    document.getElementById('user-name-mobile').textContent = state.user.firstName;
+                }
+            } else {
+                authButtonsMobile.style.display = 'block';
+                userMenuMobile.style.display = 'none';
+            }
+        }
+
+        function login(email, password) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    if (testUsers[email] && testUsers[email].password === password) {
+                        state.isAuthenticated = true;
+                        state.user = {
+                            email: email,
+                            ...testUsers[email]
+                        };
+                        
+                        localStorage.setItem('femmes2030_user', JSON.stringify(state.user));
+                        localStorage.setItem('femmes2030_auth', 'true');
+                        
+                        updateAuthUI();
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }, 1000);
+            });
+        }
+
+        function register(userData) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    state.isAuthenticated = true;
+                    state.user = userData;
+                    
+                    localStorage.setItem('femmes2030_user', JSON.stringify(state.user));
+                    localStorage.setItem('femmes2030_auth', 'true');
+                    
+                    updateAuthUI();
+                    resolve(true);
+                }, 1000);
+            });
+        }
+
+        function logout() {
+            state.isAuthenticated = false;
+            state.user = null;
+            
+            localStorage.removeItem('femmes2030_user');
+            localStorage.removeItem('femmes2030_auth');
+            
+            updateAuthUI();
+            navigateTo('home');
+            
+            showNotification('Vous êtes maintenant déconnecté(e)', 'success');
+        }
+
+        function checkStoredAuth() {
+            const isAuth = localStorage.getItem('femmes2030_auth') === 'true';
+            const storedUser = localStorage.getItem('femmes2030_user');
+            
+            if (isAuth && storedUser) {
+                state.isAuthenticated = true;
+                state.user = JSON.parse(storedUser);
+                updateAuthUI();
+            }
+        }
+
+        // --- GESTION DES FORMULAIRES ---
+        document.getElementById('login-form')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-btn-text');
+            const loading = document.getElementById('login-loading');
+            
+            loginBtn.textContent = 'Connexion...';
+            loading.classList.remove('hidden');
+            
+            const success = await login(email, password);
+            
+            loginBtn.textContent = 'Se connecter';
+            loading.classList.add('hidden');
+            
+            if (success) {
+                showNotification('Connexion réussie !', 'success');
+                navigateTo('dashboard');
+            } else {
+                showNotification('Email ou mot de passe incorrect', 'error');
+            }
+        });
+
+        document.getElementById('register-form')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('register-firstname').value;
+            const lastName = document.getElementById('register-lastname').value;
+            const email = document.getElementById('register-email').value;
+            const phone = document.getElementById('register-phone').value;
+            const password = document.getElementById('register-password').value;
+            const passwordConfirm = document.getElementById('register-password-confirm').value;
+            
+            const registerBtn = document.getElementById('register-btn-text');
+            const loading = document.getElementById('register-loading');
+            
+            if (password !== passwordConfirm) {
+                showNotification('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
+                return;
+            }
+            
+            if (testUsers[email]) {
+                showNotification('Cet email est déjà utilisé', 'error');
+                return;
+            }
+            
+            registerBtn.textContent = 'Création du compte...';
+            loading.classList.remove('hidden');
+            
+            const userData = {
+                firstName,
+                lastName,
+                email,
+                phone,
+                role: 'À définir',
+                joinDate: new Date().getFullYear()
+            };
+            
+            const success = await register(userData);
+            
+            registerBtn.textContent = 'Créer mon compte';
+            loading.classList.add('hidden');
+            
+            if (success) {
+                showNotification('Compte créé avec succès !', 'success');
+                navigateTo('onboarding');
+            }
+        });
+
+        // --- ONBOARDING ---
+        function selectRole(btn, role) {
+            document.querySelectorAll('.role-btn').forEach(b => {
+                b.classList.remove('border-primary-empowermentPurple', 'bg-purple-50');
+                b.classList.add('border-gray-200');
+            });
+            btn.classList.remove('border-gray-200');
+            btn.classList.add('border-primary-empowermentPurple', 'bg-purple-50');
+            
+            if (state.user) {
+                state.user.role = role;
+            }
+        }
+
+        function nextStep(stepNum) {
+            if (stepNum === 2) {
+                document.getElementById('step-1').classList.add('hidden');
+                document.getElementById('step-2').classList.remove('hidden');
+                document.getElementById('progress-bar').style.width = '66%';
+            } else {
+                document.getElementById('step-2').classList.add('hidden');
+                document.getElementById('step-1').classList.remove('hidden');
+                document.getElementById('progress-bar').style.width = '33%';
+            }
+        }
+
+        function completeOnboarding() {
+            const goalName = document.getElementById('goal-name').value || "Développer mes compétences";
+            
+            if (state.user) {
+                state.user.goal = goalName;
+                localStorage.setItem('femmes2030_user', JSON.stringify(state.user));
+            }
+            
+            showNotification('Profil complété avec succès !', 'success');
+            navigateTo('dashboard');
+        }
+
+        // --- NOTIFICATIONS ---
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-xl shadow-lg z-50 animate-slide-up ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i data-lucide="${
+                        type === 'success' ? 'check-circle' :
+                        type === 'error' ? 'alert-circle' : 'info'
+                    }" class="w-5 h-5 mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // --- INITIALISATION ---
+        window.onload = function() {
+            lucide.createIcons();
+            checkStoredAuth();
+            navigateTo('home');
+            console.log("Application Femmes 2030 Initialisée");
+        };
+        // --- MARKETPLACE LOGIC ---
+function filterOpportunities(category) {
+    const opportunities = document.querySelectorAll('#opportunities-grid > div');
+    
+    opportunities.forEach(opp => {
+        const typeElement = opp.querySelector('i[data-lucide="briefcase"], i[data-lucide="book-open"], i[data-lucide="banknote"]');
+        const type = typeElement ? 
+            (typeElement.getAttribute('data-lucide') === 'briefcase' ? 'Emploi' :
+             typeElement.getAttribute('data-lucide') === 'book-open' ? 'Formation' : 'Finance') : '';
+        
+        if (category === 'all' || category === type) {
+            opp.style.display = 'block';
+        } else {
+            opp.style.display = 'none';
+        }
+    });
+    
+    // Update active filter button
+    document.querySelectorAll('#view-marketplace button').forEach(btn => {
+        btn.classList.remove('bg-primary-empowermentPurple', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+    });
+    
+    event.target.classList.remove('bg-gray-100', 'text-gray-700');
+    event.target.classList.add('bg-primary-empowermentPurple', 'text-white');
+}
+function checkAuthAndNavigate(viewId) {
+    // Les pages accessibles sans connexion
+    const publicPages = ['home', 'marketplace', 'login', 'register'];
+    
+    if (!state.isAuthenticated && !publicPages.includes(viewId)) {
+        navigateTo('login');
+    } else {
+        navigateTo(viewId);
+    }
+    if (viewId === 'finances') initFinanceChart();
+}
+// --- FINANCES LOGIC ---
+function initFinanceChart() {
+    const ctx = document.getElementById('finance-chart').getContext('2d');
+    
+    const data = {
+        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+        datasets: [{
+            label: 'Épargne (FCFA)',
+            data: [50000, 75000, 120000, 180000, 240000, 290000, 320000, 350000, 380000, 400000, 425000, 450000],
+            borderColor: '#00853f',
+            backgroundColor: 'rgba(0, 133, 63, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    };
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString() + ' FCFA';
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Initialize loan calculator
+    const loanAmount = document.getElementById('loan-amount');
+    const loanDuration = document.getElementById('loan-duration');
+    const monthlyPayment = document.getElementById('monthly-payment');
+    
+    function updateLoanCalculation() {
+        const amount = parseInt(loanAmount.value);
+        const duration = parseInt(loanDuration.value);
+        
+        document.getElementById('loan-amount-display').textContent = amount.toLocaleString();
+        document.getElementById('loan-duration-display').textContent = duration + ' mois';
+        
+        // Simple interest calculation (5% annual)
+        const monthlyRate = 0.05 / 12;
+        const payment = amount * monthlyRate * Math.pow(1 + monthlyRate, duration) / (Math.pow(1 + monthlyRate, duration) - 1);
+        
+        monthlyPayment.textContent = Math.round(payment).toLocaleString() + ' FCFA';
+    }
+    
+    loanAmount.addEventListener('input', updateLoanCalculation);
+    loanDuration.addEventListener('input', updateLoanCalculation);
+    updateLoanCalculation();
+}
+const courses = {
+    "gestion-entreprise": {
+        title: "Gestion d'Entreprise pour Débutantes",
+        description: "Apprenez à gérer votre trésorerie, vos stocks et vos clients efficacement. Parfait pour les femmes qui démarrent leur business.",
+        modules: [
+            { id: 1, title: "Introduction à la Gestion d'Entreprise", duration: "15:30", completed: true },
+            { id: 2, title: "Gestion de Trésorerie et Budget", duration: "22:15", completed: true },
+            { id: 3, title: "Contrôle des Stocks et Inventaire", duration: "18:45", completed: false },
+            { id: 4, title: "Gestion des Clients et Relation Client", duration: "25:10", completed: false },
+            { id: 5, title: "Analyse des Coûts et Prix de Vente", duration: "20:30", completed: false }
+        ]
+    },
+    "vente-digitale": {
+        title: "Vente Digitale & E-commerce",
+        description: "Apprenez à vendre vos produits en ligne et développer votre présence digitale.",
+        modules: [
+            { id: 1, title: "Introduction au E-commerce", duration: "12:20", completed: false },
+            { id: 2, title: "Création de Boutique en Ligne", duration: "28:45", completed: false },
+            { id: 3, title: "Stratégies de Marketing Digital", duration: "24:15", completed: false },
+            { id: 4, title: "Gestion des Commandes en Ligne", duration: "18:30", completed: false }
+        ]
+    },
+    "finance-personnelle": {
+        title: "Finance Personnelle & Épargne",
+        description: "Gérez votre budget, épargnez efficacement et planifiez vos projets financiers.",
+        modules: [
+            { id: 1, title: "Les Bases de la Finance Personnelle", duration: "15:00", completed: true },
+            { id: 2, title: "Création d'un Budget Efficace", duration: "20:30", completed: true },
+            { id: 3, title: "Stratégies d'Épargne Intelligente", duration: "18:15", completed: true },
+            { id: 4, title: "Planification des Projets Financiers", duration: "22:45", completed: true },
+            { id: 5, title: "Gestion des Dettes et Crédits", duration: "19:20", completed: true },
+            { id: 6, title: "Investissement pour Débutantes", duration: "25:10", completed: true }
+        ]
+    }
+};
+// --- HOME LOGIC ---
+function updateHomeForLoggedInUser() {
+    if (state.isAuthenticated && state.user) {
+        // Mettre à jour le nom d'utilisateur
+        document.getElementById('home-username').textContent = state.user.firstName;
+        
+        // Mettre à jour les stats (vous pouvez adapter ces valeurs selon vos données réelles)
+        document.getElementById('home-progress').textContent = '35%';
+        document.getElementById('home-courses').textContent = '3';
+        document.getElementById('home-opportunities').textContent = '12';
+        document.getElementById('home-network').textContent = '24';
+        
+        // Changer le hero pour utilisateur connecté
+        const hero = document.querySelector('#view-home .bg-gradient-to-br');
+        if (hero) {
+            hero.className = 'bg-gradient-to-br from-primary-empowermentPurple to-purple-600 text-white py-16 px-4 relative overflow-hidden';
+        }
+    }
+}
+    </script>
+</body>
+</html>
